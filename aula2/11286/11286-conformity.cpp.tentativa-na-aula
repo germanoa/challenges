@@ -1,0 +1,113 @@
+#include <iostream>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <queue>
+#include <map>
+
+using namespace std;
+
+#define MAX 10000
+#define MIN 1
+
+
+
+/*
+fazer depois com trees. (set?)
+
+
+lista de filas ordenadas
+if frozen == 1
+    printf 1
+else
+    lista.append(primeira lista de cursos)
+
+para o restante de calouros:
+    nova_fila = ordenar cursos
+    for each fila existente
+        if (nova fila == fila existente)
+            contador[fila_existente]++;
+printf maior elemento de contador.
+
+*/
+
+int froshs;
+vector<int> combinations_counter;
+vector< map<int,int> > combinations;
+
+string line;
+bool diff;
+bool inserted;
+int v1,v2,v3,v4,v5;
+
+int main()
+{
+    cin >> froshs;
+    if (froshs == 1) {
+        printf("1\n");
+        return 0;
+    }
+    else {
+        while (froshs != 0) {
+            for (int i = 0; i < froshs; i++) {
+                map<int,int> froshs_courses;
+                cin >> v1 >> v2 >> v3 >> v4 >> v5;
+                froshs_courses.insert(std::pair<int,int>(v1,0));
+                froshs_courses.insert(std::pair<int,int>(v2,0));
+                froshs_courses.insert(std::pair<int,int>(v3,0));
+                froshs_courses.insert(std::pair<int,int>(v4,0));
+                froshs_courses.insert(std::pair<int,int>(v5,0));
+printf("    oi1\n");
+                if (!combinations.empty()) { //nao eh a primeira insercao
+printf("    oi2\n");
+                    inserted = false;
+                    for (int j = 0; j <= combinations.size(); j++) { //para cada combinacao existente
+printf("    oi2b\n");
+                        diff = false;
+                        int s = combinations[j].size();
+                        for (int k = 0; k <= s; k++) { //para cada course na combinacao
+printf("    oi %d %d %d\n",j,k,s);
+                            if (froshs_courses[k] != combinations[j][k]) { //compara item a item
+printf("    y\n");
+                                diff = true;
+                                break;
+                            }
+printf("    l\n");
+                        }
+                        if (!diff) {
+                            // achamos combinacao equivalente
+printf("    igual\n");
+                            combinations_counter[j]++;
+                            inserted = true;
+                            break;
+                        }
+printf("    passou\n");
+                    }
+printf("    oi3\n");
+                    if (!inserted) { //inserir nova combinacao
+                        combinations.push_back(froshs_courses);
+                    }
+                } else {
+printf("    oi4\n");
+                    combinations.push_back(froshs_courses);
+printf("    oi5\n");
+                }
+                int temp=0;
+                for (int g=0; g<combinations_counter.size(); g++) {
+printf("    oi6 %d\n",combinations_counter.size());
+                    if (combinations_counter[g] > temp) {
+printf("    oi7\n");
+                        temp = combinations_counter[g];
+                    }
+printf("    oi8\n");
+                }
+printf("    oi9\n");
+                printf ("%d\n",temp);
+                cin >> froshs; //proxima rodada
+            }
+            return 0;
+    }
+}
+
+
