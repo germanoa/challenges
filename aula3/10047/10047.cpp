@@ -19,7 +19,6 @@ using namespace std;
 #define COST 0
 
 int ***matrix; //1D:row 2D:col 3D:possible facings
-int rotates;
 int m,n,si,sj,ti,tj;
 char c;
 
@@ -31,8 +30,6 @@ void print_matrix() {
         cout << endl;
     }
 }
-
-
 
 int look_to_north (int i, int j) {
     int ret=BLOCKED;
@@ -104,14 +101,10 @@ int look_to_west (int i, int j) {
 
 int main() {
 
-    // quando um dos 4 pontos for T, squares MOD 5 movimentos adicionais
-    // retorna soma dos contadores
-
     int nr=0,sr=0,er=0,wr=0;
 
     while (cin >> m) {
         cin >> n;
-        rotates = 0;       
  
         matrix = new int **[m];
         for (int i=0; i < m; i++) {
@@ -132,7 +125,10 @@ int main() {
                 //else { cout << "invalid input\n"; exit(1); }
             }
         }
-        while (matrix[ti][tj][COST] == TARGET ) {
+        bool state_change;
+        state_change=true;
+        while ((matrix[ti][tj][COST] == TARGET) && (state_change==true) ) {
+            state_change=false;
             for (int i=0; i < m; i++) {
                 for (int j=0; j<n; j++) {
                     if (matrix[i][j][COST] >=-1 || matrix[i][j][COST]==TARGET) {
@@ -140,7 +136,7 @@ int main() {
                         sr = look_to_south(i,j);         
                         er = look_to_east(i,j);         
                         wr = look_to_west(i,j);         
-                        cout << "i,j=" <<i <<"," <<j << ": " << nr << " " << sr << " " << er << " " << wr << endl;
+                        cout << "i,j="<<i<<","<<j<<": "<<nr<<" "<<sr<<" "<<er<<" "<<wr<<endl;
 
                         priority_queue<int> best;
                         if (nr>0) { best.push(nr*-1);}
@@ -163,6 +159,7 @@ int main() {
                                 if (b == wr) { best_f[EAST]=1; }
 
                                 matrix[i][j][COST]=b;
+                                state_change=true;
                                 printf("#################################\n");
                                 print_matrix();
                                 printf("#################################\n");
@@ -174,6 +171,9 @@ int main() {
                     }
                 }
             }
+        }
+        if (state_change==false) {
+            cout << "destination not reacheable" << endl;
         }
 
         print_matrix();        
