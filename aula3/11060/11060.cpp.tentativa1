@@ -1,0 +1,57 @@
+#include <algorithm>
+#include <cstdio>
+#include <map>
+#include <vector>
+#include <queue>
+#include <iostream>
+using namespace std;
+
+typedef vector<int> vi;      
+typedef vector<string> vs;      
+map<string,pair<int,vs> > AdjList;
+map<string,pair<int,vs> >::iterator it;
+
+
+
+
+int main() {
+
+    int n,m;
+    string beverage,b1,b2;
+    priority_queue l0;
+
+    while(cin >> n) {
+        for (int i=1; i<=n; i++) {
+            cin >> beverage;
+            AdjList[beverage].first=-i;
+        }
+        cin >> m;
+        for (int i=0; i<m; i++) {
+            cin >> b1;
+            cin >> b2;
+            AdjList[b1].second.push_back(b2);
+            if (AdjList[b2].first < 0) {
+                AdjList[b2].first = AdjList[b2].first * -1; // not level 0
+            }
+        }
+        
+        for (it = AdjList.begin(); it != AdjList.end(); it++) {
+            if (it->second.first < 0) {
+                l0.push();
+            }        
+        }
+        //print
+        //for (it = AdjList.begin(); it != AdjList.end(); it++) {
+        //    cout << it->first << ";" << it->second.first << ";";
+        //    for (int j=0; j < it->second.second.size(); j++) {
+        //        cout << it->second.second[j] << " ";
+        //    }
+        //    cout << endl;
+        //}
+        AdjList.clear();
+
+
+    }
+
+    return 0;
+}

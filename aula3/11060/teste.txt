@@ -1,0 +1,11 @@
+beer whiskey
+apple-juice gin
+rum cachaca
+vodka tequila
+apple-juice martini
+rum gin
+wine whiskey
+apple-juice beer
+beer rum
+wine vodka
+beer tequila

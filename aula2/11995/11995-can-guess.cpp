@@ -105,7 +105,7 @@ int main() {
         s = can_be_stack(cmds);
         q = can_be_queue(cmds);
         pq = can_be_pqueue(cmds);
-        i = !s && !q && !pq;
+        i = !(s || q || pq);
         ns = ( (int)s + (int)q + (int)(pq) > 1 );
 
         if (i) { cout << "impossible\n"; }
