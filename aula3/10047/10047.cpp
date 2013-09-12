@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 #define SOURCE 0
 #define VIRGIN -1
 #define BLOCKED -2
@@ -24,9 +23,10 @@ typedef struct {
   int o;
   int c;
   int r;
+  int color;
 } ijocr;
 
-int **matrix; //1D:row 2D:col
+int **matrix;
 int m,n,si,sj,ti,tj,timeout;
 char c;
 priority_queue<int> results;
@@ -55,17 +55,17 @@ void* f(void* arg) {
   else if(z->c >= timeout) {
   //
   }
-  else if ((matrix[z->i][z->j] == TARGET) && (z->c%5==0)) {
-    if (z->c%5==0) {
+  else if ((matrix[z->i][z->j] == TARGET) && (z->color==0)) {
+    if (z->color==0) {
       results.push((z->c+z->r)*-1); //-1 = inverse priority queue
-      //cout <<"green! " << z->c+z->r << endl;
-      //printf("TARGET! %d: %p -> i=%d j=%d o:%d r:%d c:%d\n",i++, &z, z->i, z->j, z->o, z->r, z->c);
+      cout <<"green! " << z->c+z->r << endl;
+      //printf("TARGET! %d: %p -> i=%d j=%d o:%d r:%d c:%d color:%d\n",i++, &z, z->i, z->j, z->o, z->r, z->c, z->color);
     } 
-    //printf("TARGET! %d: %p -> i=%d j=%d o:%d r:%d c:%d\n",i++, &z, z->i, z->j, z->o, z->r, z->c);
+    //printf("TARGET! %p -> i=%d j=%d o:%d r:%d c:%d\n", &z, z->i, z->j, z->o, z->r, z->c);
   }
   else {
     //matrix[z->i][z->j] = VISITED;
-    //printf("%d: %p -> i=%d j=%d o:%d r:%d c:%d\n",i++, &z, z->i, z->j, z->o, z->r, z->c);
+    //printf("%d: %p -> i=%d j=%d o:%d r:%d c:%d color:%d\n",i++, &z, z->i, z->j, z->o, z->r, z->c, z->color);
     ijocr zz[4];
     pthread_t t[4];
     
@@ -76,36 +76,52 @@ void* f(void* arg) {
 
     if (z->o == NORTH) {
         zz[NORTH].r=z->r;
-        zz[SOUTH].r=z->r+2;
+        zz[NORTH].color=(z->color+1)%5;
+        zz[SOUTH].r=z->r;
+        zz[SOUTH].color=(z->color-1)%5;
         zz[EAST].r=z->r+1;
+        zz[EAST].color=(z->color+1)%5;
         zz[WEST].r=z->r+1;
+        zz[WEST].color=(z->color+1)%5;
         if (!first_time) {
           go_south=false;
         }
     }
     else if(z->o == SOUTH) {
-        zz[NORTH].r=z->r+2;
+        zz[NORTH].r=z->r;
+        zz[NORTH].color=(z->color-1)%5;
         zz[SOUTH].r=z->r;
+        zz[SOUTH].color=(z->color+1)%5;
         zz[EAST].r=z->r+1;
+        zz[EAST].color=(z->color+1)%5;
         zz[WEST].r=z->r+1;
+        zz[WEST].color=(z->color+1)%5;
         if (!first_time) {
           go_north=false;
         }
     }
     else if(z->o == EAST) {
         zz[NORTH].r=z->r+1;
+        zz[NORTH].color=(z->color+1)%5;
         zz[SOUTH].r=z->r+1;
+        zz[SOUTH].color=(z->color+1)%5;
         zz[EAST].r=z->r;
-        zz[WEST].r=z->r+2;
+        zz[EAST].color=(z->color+1)%5;
+        zz[WEST].r=z->r;
+        zz[WEST].color=(z->color-1)%5;
         if (!first_time) {
           go_west=false;
         }
     }
     else if(z->o == WEST) {
         zz[NORTH].r=z->r+1;
+        zz[NORTH].color=(z->color+1)%5;
         zz[SOUTH].r=z->r+1;
-        zz[EAST].r=z->r+2;
+        zz[SOUTH].color=(z->color+1)%5;
+        zz[EAST].r=z->r;
+        zz[EAST].color=(z->color-1)%5;
         zz[WEST].r=z->r;
+        zz[WEST].color=(z->color+1)%5;
         if (!first_time) {
           go_east=false;
         }
@@ -144,7 +160,7 @@ void* f(void* arg) {
       pthread_join(t[WEST], NULL);
     }
   }
-  //first_time=false;
+  first_time=false;
   return NULL;
 }
 
@@ -177,6 +193,7 @@ int main() {
         z->o=NORTH;
         z->c=0;
         z->r=0;
+        z->color=0;
         f((void*)z);
         cout << results.top() << endl;
     }
