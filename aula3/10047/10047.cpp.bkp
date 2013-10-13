@@ -1,0 +1,232 @@
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <queue>
+#include <pthread.h>
+
+using namespace std;
+
+
+#define SOURCE 0
+#define VIRGIN -1
+#define BLOCKED -2
+#define TARGET -3
+
+#define NORTH 0
+#define SOUTH 1
+#define EAST 2
+#define WEST 3
+
+typedef struct {
+  int i;
+  int j;
+  int o;
+  int c;
+  int r;
+} ijocr;
+
+int **matrix; //1D:row 2D:col
+int m,n,si,sj,ti,tj;
+char c;
+priority_queue<int> results;
+
+
+void print_matrix() {
+    for (int i=0; i < m; i++) {
+        for (int j=0; j<n; j++) {
+            printf("%d;",matrix[i][j]);
+        }
+        cout << endl;
+    }
+}
+
+int i;
+
+void* f(void* arg) {
+// o: orientation
+// c: cost
+// r: rotations
+  ijocr *z;
+  z = new ijocr;
+  z = (ijocr*) arg;
+  if ( (matrix[z->i][z->j] == BLOCKED) || \
+       (z->o == NORTH && z->i==0) || \
+       (z->o == SOUTH && z->i==m-1) || \
+       (z->o == WEST && z->j==0) || \
+       (z->o == EAST && z->j==n-1) ) {
+    cout << "limit." << endl;
+  }
+  else if ((matrix[z->i][z->j] == TARGET) && (z->c%5==0)) {
+    results.push((z->c+z->r)*-1); //-1 = inverse priority queue
+    cout << z->c+z->r << endl;
+  }
+  else {
+  printf("%p - %d %d ; %d = o:%d r:%d c:%d\n",&z, i++, z->i, z->j, z->o, z->r, z->c);
+    ijocr zz[4];
+    pthread_t t[4];
+
+    if(z->o == NORTH) {
+      zz[NORTH].r=z->r;
+      /* go_north */
+      if (z->j>=0) {
+        zz[NORTH].i=z->i;
+        zz[NORTH].j=z->j-1;
+        zz[NORTH].o=NORTH;
+        zz[NORTH].c=z->c+1;
+        pthread_create(&t[NORTH], NULL,&f,&zz[NORTH]); 
+        pthread_join(t[NORTH], NULL);
+      }
+      zz[EAST].r=z->r+1;
+      /* go east */
+      if (z->i<m) {
+        zz[EAST].i=z->i+1;
+        zz[EAST].j=z->j;
+        zz[EAST].o=EAST;
+        zz[EAST].c=z->c+1;
+        pthread_create(&t[EAST], NULL,&f,&zz[EAST]); 
+        pthread_join(t[EAST], NULL);
+      }
+      zz[WEST].r=z->r+1;
+      /* go west */
+      if (z->i>=0) {
+        zz[WEST].i=z->i-1;
+        zz[WEST].j=z->j;
+        zz[WEST].o=WEST;
+        zz[EAST].c=z->c+1;
+        pthread_create(&t[WEST], NULL,&f,&zz[WEST]); 
+        pthread_join(t[WEST], NULL);
+      }
+    }
+    else if(z->o == SOUTH) {
+      zz[SOUTH].r=z->r;
+      /* go_south */
+      if (z->j<n) {
+        zz[SOUTH].i=z->i;
+        zz[SOUTH].j=z->j+1;
+        zz[SOUTH].o=SOUTH;
+        zz[SOUTH].c=z->c+1;
+        pthread_create(&t[SOUTH], NULL,&f,&zz[SOUTH]); 
+        pthread_join(t[SOUTH], NULL);
+      }
+      zz[EAST].r=z->r+1;
+      /* go east */
+      if (z->i<m) {
+        zz[EAST].i=z->i+1;
+        zz[EAST].j=z->j;
+        zz[EAST].o=EAST;
+        zz[EAST].c=z->c+1;
+        pthread_create(&t[EAST], NULL,&f,&zz[EAST]); 
+        pthread_join(t[EAST], NULL);
+      }
+      zz[WEST].r=z->r+1;
+      /* go west */
+      if (z->i>=0) {
+        zz[WEST].i=z->i-1;
+        zz[WEST].j=z->j;
+        zz[WEST].o=WEST;
+        zz[EAST].c=z->c+1;
+        pthread_create(&t[WEST], NULL,&f,&zz[WEST]); 
+        pthread_join(t[WEST], NULL);
+      }
+    }
+    if(z->o == EAST) {
+      zz[NORTH].r=z->r+1;
+      /* go_north */
+      if (z->j>=0) {
+        zz[NORTH].i=z->i;
+        zz[NORTH].j=z->j-1;
+        zz[NORTH].o=NORTH;
+        zz[NORTH].c=z->c+1;
+        pthread_create(&t[NORTH], NULL,&f,&zz[NORTH]); 
+        pthread_join(t[NORTH], NULL);
+      }
+      zz[SOUTH].r=z->r+1;
+      /* go_south */
+      if (z->j<n) {
+        zz[SOUTH].i=z->i;
+        zz[SOUTH].j=z->j+1;
+        zz[SOUTH].o=SOUTH;
+        zz[SOUTH].c=z->c+1;
+        pthread_create(&t[SOUTH], NULL,&f,&zz[SOUTH]); 
+        pthread_join(t[SOUTH], NULL);
+      }
+      zz[EAST].r=z->r;
+      /* go east */
+      if (z->i<m) {
+        zz[EAST].i=z->i+1;
+        zz[EAST].j=z->j;
+        zz[EAST].o=EAST;
+        zz[EAST].c=z->c+1;
+        pthread_create(&t[EAST], NULL,&f,&zz[EAST]); 
+        pthread_join(t[EAST], NULL);
+      }
+    }
+    if(z->o == WEST) {
+      zz[NORTH].r=z->r+1;
+      /* go_north */
+      if (z->j>=0) {
+        zz[NORTH].i=z->i;
+        zz[NORTH].j=z->j-1;
+        zz[NORTH].o=NORTH;
+        zz[NORTH].c=z->c+1;
+        pthread_create(&t[NORTH], NULL,&f,&zz[NORTH]); 
+        pthread_join(t[NORTH], NULL);
+      }
+      zz[SOUTH].r=z->r+1;
+      /* go_south */
+      if (z->j<n) {
+        zz[SOUTH].i=z->i;
+        zz[SOUTH].j=z->j+1;
+        zz[SOUTH].o=SOUTH;
+        zz[SOUTH].c=z->c+1;
+        pthread_create(&t[SOUTH], NULL,&f,&zz[SOUTH]); 
+        pthread_join(t[SOUTH], NULL);
+      }
+      zz[WEST].r=z->r;
+      /* go west */
+      if (z->i>=0) {
+        zz[WEST].i=z->i-1;
+        zz[WEST].j=z->j;
+        zz[WEST].o=WEST;
+        zz[EAST].c=z->c+1;
+        pthread_create(&t[WEST], NULL,&f,&zz[WEST]); 
+        pthread_join(t[WEST], NULL);
+      }
+    }
+
+
+  }
+  return NULL;
+}
+
+
+int main() {
+    i=0;
+    while (cin >> m) {
+        cin >> n;
+        if (m == 0 && n == 0) { break; } 
+
+        matrix = new int *[m];
+        for (int i=0; i < m; i++) {
+            matrix[i] = new int [n];
+            for (int j=0; j<n; j++) {
+                cin >> c;
+                if (c == '#') { matrix[i][j]=BLOCKED; }
+                else if (c == '.') { matrix[i][j]=VIRGIN; }
+                else if (c == 'S') {si=i; sj=j; \
+                                    matrix[i][j]=SOURCE; }
+                else if (c == 'T') {ti=i; tj=j; \
+                                    matrix[i][j]=TARGET; }
+                //else { cout << "invalid input\n"; exit(1); }
+            }
+        }
+        ijocr *z;
+        z = new ijocr;
+        z->i=si;
+        z->j=sj;
+        z->o=NORTH;
+        z->c=0;
+        z->r=0;
+        f((void*)z);
+    }
+}

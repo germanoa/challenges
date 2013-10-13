@@ -30,7 +30,7 @@ int **matrix;
 int m,n,si,sj,ti,tj,timeout;
 char c;
 priority_queue<int> results;
-bool first_time;
+bool first_time,has_path;
 
 void print_matrix() {
     for (int i=0; i < m; i++) {
@@ -56,12 +56,10 @@ void* f(void* arg) {
   //
   }
   else if ((matrix[z->i][z->j] == TARGET) && (z->color==0)) {
-    if (z->color==0) {
-      results.push((z->c+z->r)*-1); //-1 = inverse priority queue
-      cout <<"green! " << z->c+z->r << endl;
-      //printf("TARGET! %d: %p -> i=%d j=%d o:%d r:%d c:%d color:%d\n",i++, &z, z->i, z->j, z->o, z->r, z->c, z->color);
-    } 
-    //printf("TARGET! %p -> i=%d j=%d o:%d r:%d c:%d\n", &z, z->i, z->j, z->o, z->r, z->c);
+    results.push((z->c+z->r)*-1); //-1 = inverse priority queue
+    //cout <<"green! " << z->c+z->r << endl;
+    has_path=true;
+    //printf("TARGET! %d: %p -> i=%d j=%d o:%d r:%d c:%d color:%d\n",i++, &z, z->i, z->j, z->o, z->r, z->c, z->color);
   }
   else {
     //matrix[z->i][z->j] = VISITED;
@@ -172,6 +170,7 @@ int main() {
         if (m == 0 && n == 0) { break; } 
         timeout=m*n/2;
         first_time=true;
+        has_path=false;
         matrix = new int *[m];
         for (int i=0; i < m; i++) {
             matrix[i] = new int [n];
@@ -195,6 +194,11 @@ int main() {
         z->r=0;
         z->color=0;
         f((void*)z);
-        cout << results.top() << endl;
+        if (has_path) {
+          cout << (results.top() *-1) << endl;
+        }
+        else {
+          cout << "destination not reacheable\n"; 
+        }
     }
 }
