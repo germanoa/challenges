@@ -4,47 +4,66 @@
 
 using namespace std;
 
-int matrix[100][100];
+int matrix[105][105];
 
 void print_matrix(int begin, int end) {
   for (int i=begin;i<=end;++i) {
       printf("%2d|",i);
   }
   printf("\n");
-  for (int j=begin;j<end;++j) {
-    for (int i=begin;i<end;++i) {
+  for (int i=begin;i<=end;++i) {
+      printf("---");
+  }
+  printf("\n");
+  for (int j=begin;j<=end;++j) {
+    for (int i=begin;i<=end;++i) {
       printf("%2d|",matrix[j][i]);
     }
     printf("\n");
   }
+  printf("\n");
 }
 
 int main() {
 
   int n,bigger;
+	bigger=-127*100*100;
 
-  memset(matrix,-1,sizeof(matrix));
+  memset(matrix,0,sizeof(matrix));
   
   while (cin >> n) {
-
-    for (int i=0;i<n;++i) {
-      for (int j=0;j<n;++j) {
+		//
+    for (int i=1;i<=n;++i) {
+      for (int j=1;j<=n;++j) {
         cin >> matrix[i][j];
       }
     }
-    print_matrix(0,n);
-
-    bigger=matrix[0][0];
-    for (int i=1;i<n;++i) {
-      for (int j=1;j<n;++j) {
-        int temp=0;
-        if (matrix[i-1][j]>0)  {temp = matrix[i-1][j]; }
-        if (matrix[i][j-1]>0)  {temp = temp +matrix[i][j-1]; } 
-        if ( (temp + matrix[i][j]) > matrix[i][j] ) { matrix[i][j]=temp+matrix[i][j]; }
-        if (matrix[i][j] > bigger) { bigger = matrix[i][j]; }
+    //print_matrix(0,n);
+		// sum matrix from 0,0 to i,j
+    for (int i=1;i<=n;++i) {
+      for (int j=1;j<=n;++j) {
+        matrix[i][j] += matrix[i-1][j];
+        matrix[i][j] += matrix[i][j-1]; 
+        if (i>1 && j>1) matrix[i][j] -= matrix[i-1][j-1]; //elimina redundancia
       }
     }
-    cout << bigger << endl; 
-    print_matrix(0,n);
+    //print_matrix(0,n);
+		// bigger cell from i,j to p,q
+		int temp;
+		//int ie,je,pe,qe;
+    for (int i=1;i<=n;++i) {
+      for (int j=1;j<=n;++j) {
+    		for (int p=n;p>i;--p) {
+    		  for (int q=n;q>j;--q) {
+						temp = matrix[p][q] - matrix[p][j-1] - matrix [i-1][q] + matrix[i-1][j-1];
+						if (temp>bigger) { bigger=temp; }
+						//if (temp>bigger) { bigger=temp; ie=i;je=j;pe=p;qe=q; }
+					}
+				}
+      }
+    }
+	  //printf("%d %d %d %d\n",ie,je,pe,qe);
+    //print_matrix(0,n);
+		cout << bigger << endl;
   }
 }
