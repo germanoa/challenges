@@ -6,41 +6,36 @@
 import sys
 
 # 0. Global definitions and initializations
-worst_odd_n = 99999
-cycle_length = [None] * ((3 * worst_odd_n) + 1 + 1)	# cycle_length[0] not used
+worst_odd_n = 9038141
+cycle_length = [None] * ((3 * worst_odd_n) + 1 + 1) # cycle_length[0] not used
 cycle_length[1] = 1
 
 # 2. Functions
-
 def calc_cycle_length(n):
-    cycles = 1
     if n == 1:
         pass
     elif n%2==0:
         m = int(n/2)
     else:
         m = int((3*n)+1)
-    #sys.stdout.write("n->m: %d -> %d\n" %(n,m))
+
     if cycle_length[m] == None:
         calc_cycle_length(m)
-    else:
-        cycle_length[m]
+
     cycle_length[n] = 1 + cycle_length[m]
 
-def is_int(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
 # 3. Main
-
-with open(sys.argv[1], 'r') as f:
-    for line in f:
-        if is_int(line.split(" ")[0]):
+if __name__ == "__main__":
+    while True:
+        try:
+            line = next(sys.stdin)
+        except StopIteration:
+            break
+        try:
             i,j = map(int, line.split(" "))
-        else:
+            if i==0 or j==0:
+                continue
+        except ValueError:
             continue
 
         max_cycle_length = 0
@@ -49,6 +44,5 @@ with open(sys.argv[1], 'r') as f:
                 calc_cycle_length(x)
             max_cycle_length = max(max_cycle_length,cycle_length[x])
 
-            #for x in range(1,30):
-            #    sys.stdout.write("%d -> %s\n" %(x, str(cycle_length[x])))
         sys.stdout.write("%d %d %d\n" %(i, j, max_cycle_length))
+    sys.exit(0)
