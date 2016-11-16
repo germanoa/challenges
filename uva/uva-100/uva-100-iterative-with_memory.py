@@ -25,9 +25,12 @@ def calc_cycle_length(n, acc=0):
             pass
 
         if x%2==0:
-            m = int(x/2)
+            m = x >> 1 #m = int(x/2)
         else:
             m = int((3*x)+1)
+            m = m >> 1
+            acc += 1
+
         (x, acc) = (m, acc+1)
 
     cycle_length[n] = 1 + acc

@@ -14,9 +14,11 @@ import sys
 def calc_cycle_length(n, acc=0):
     while n > 1:
         if n%2==0:
-            m = int(n/2)
+            m = n >> 1 #m = int(x/2)
         else:
             m = int((3*n)+1)
+            m = m >> 1
+            acc += 1
         (n, acc) = (m, acc+1)
 
     return 1 + acc
